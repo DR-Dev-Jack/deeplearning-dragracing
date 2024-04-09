@@ -14,12 +14,6 @@ collision = True
 raycasting = True
 crash_is_game_over = True
 
-# ai config:
-ai_can_see_x_cords = True  # not working yet
-neurons = 10  # not working yet
-velocity_bonus = 0  # not working yet
-crash_punishment = 0  # not working yet
-
 # bug testing:
 hitbox_visuals = True  # shows the hit box for collision bug testing
 raycasting_visuals = True  # shows ray casting for bug testing and fun

@@ -1,6 +1,8 @@
 import pygame as pg
 from config import *
+#from second_brain import *
 import random
+from csv import writer
 
 pg.init()
 running = True
@@ -32,6 +34,8 @@ angle = -180
 roads = [301, 401, 501, 601]
 crash_counter = 0
 tick = 0
+left = 0
+right = 0
 
 
 # Pygame update function
@@ -41,6 +45,7 @@ def update():
 
 
 def ray(x, y, max_ray_length, oriantation, list):
+    global shortest_ray
     distance = 0
     original_x = x
     original_y = y
@@ -57,8 +62,14 @@ def ray(x, y, max_ray_length, oriantation, list):
         elif oriantation == "Up-Left":
             x += 1  # Move left
             y -= 1  # Move up
+        elif oriantation == "Up-Less-Left":
+            x += 0.5  # Move left
+            y -= 1  # Move up
         elif oriantation == "Up-Right":
             x -= 1  # Move right
+            y -= 1  # Move up
+        elif oriantation == "Up-Less-Right":
+            x -= 0.5  # Move right
             y -= 1  # Move up
         elif oriantation == "Down-Left":
             x += 1  # Move left
@@ -101,14 +112,18 @@ while running:
     if not ai_play:
         if keys[pg.K_w] or keys[pg.K_UP]:
             velocity += acceleration_speed
+
         if keys[pg.K_s] or keys[pg.K_DOWN]:
             if velocity >= 0.2:
                 velocity -= brake_speed
+
         if keys[pg.K_a] and x >= 105 or keys[pg.K_LEFT] and x >= 105:
             x -= velocity * steering_speed
+            left = 1
 
         if keys[pg.K_d] and x <= 405 or keys[pg.K_RIGHT] and x <= 405:
             x += velocity * steering_speed
+            right = 1
 
     surrounding += velocity
     travel_lenght += velocity
@@ -155,14 +170,11 @@ while running:
         if y >= 965:
             civilian_cars.remove(car)
 
-    ray_forward = ray(x + 45, 458, 100, "Up", civilian_cars)
-    ray_forward_left = ray(x + 45, 458, 100, "Up-Left", civilian_cars)
-    ray_forward_right = ray(x + 45, 458, 100, "Up-Right", civilian_cars)
-    ray_right = ray(x, 458 + 30, 100, "Right", civilian_cars)
-    ray_right_down = ray(x, 458 + 30, 100, "Down-Right", civilian_cars)
-    ray_left = ray(x + 90, 458 + 30, 100, "Left", civilian_cars)
-    ray_left_down = ray(x + 90, 458 + 30, 100, "Down-Left", civilian_cars)
-    ray_down = ray(x + 45, 458 + 120, 100, "Down", civilian_cars)
+    ray_forward = ray(x + 45, 458, 300, "Up", civilian_cars)
+    ray_forward_left = ray(x + 45, 458, 300, "Up-Left", civilian_cars)
+    ray_forward_right = ray(x + 45, 458, 300, "Up-Right", civilian_cars)
+    ray_forward_less_left = ray(x + 45, 458, 300, "Up-Less-Left", civilian_cars)
+    ray_forward_less_right = ray(x + 45, 458, 300, "Up-Less-Right", civilian_cars)
 
     if speedometer:
         speed_in_degrees = -velocity * 4.5 - 180
@@ -186,4 +198,13 @@ while running:
         if crash_counter >= 1 and crash_is_game_over:
             print("final distance:", round(travel_lenght))
             exit("Program stopped, cause: you crashed!")
-    update()
+
+    List = [round(y),  ray_forward_left, ray_forward_less_left, ray_forward, ray_forward_less_right, ray_forward_right, left, right]
+    with open('dataset.csv', 'a') as data:
+        dataset = writer(data)
+        dataset.writerow(List)
+    left = 0
+    right = 0
+    
+    update() 
+        
