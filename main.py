@@ -1,6 +1,5 @@
 import pygame as pg
 from config import *
-#from second_brain import *
 import random
 from csv import writer
 
@@ -36,6 +35,13 @@ crash_counter = 0
 tick = 0
 left = 0
 right = 0
+sight = [300,  300, 300, 300, 300, 300]
+
+if ai_play:
+    from tensorflow import keras
+    import numpy as np
+    import pandas as pd
+    model = keras.models.load_model("model.h5")
 
 
 # Pygame update function
@@ -124,6 +130,28 @@ while running:
         if keys[pg.K_d] and x <= 405 or keys[pg.K_RIGHT] and x <= 405:
             x += velocity * steering_speed
             right = 1
+    else:
+        situation = pd.DataFrame({'situation': sight})
+        situation_translated = situation['situation'].to_numpy().reshape(1, -1)
+        reaction = model.predict(situation_translated)
+        reaction_translated = (reaction > 0.5).astype(int)
+
+        AI_left = reaction_translated[0, 0]
+        AI_right = reaction_translated[0, 1]
+
+        if keys[pg.K_w] or keys[pg.K_UP]:
+            velocity += acceleration_speed
+
+        if keys[pg.K_s] or keys[pg.K_DOWN]:
+            if velocity >= 0.2:
+                velocity -= brake_speed
+
+        if AI_left == 1 and x >= 105:
+            x -= velocity * steering_speed
+
+        if AI_right == 1 and x <= 405:
+            x += velocity * steering_speed
+
 
     surrounding += velocity
     travel_lenght += velocity
@@ -199,12 +227,15 @@ while running:
             print("final distance:", round(travel_lenght))
             exit("Program stopped, cause: you crashed!")
 
-    List = [round(y),  ray_forward_left, ray_forward_less_left, ray_forward, ray_forward_less_right, ray_forward_right, left, right]
-    with open('dataset.csv', 'a') as data:
-        dataset = writer(data)
-        dataset.writerow(List)
-    left = 0
-    right = 0
+    if collect_data:
+        data_group = [round(y),  ray_forward_left, ray_forward_less_left, ray_forward, ray_forward_less_right, ray_forward_right, left, right]
+        with open('dataset.csv', 'a') as data:
+            dataset = writer(data)
+            dataset.writerow(data_group)
+        left = 0
+        right = 0
+
+    sight = [round(y),  ray_forward_left, ray_forward_less_left, ray_forward, ray_forward_less_right, ray_forward_right]
     
     update() 
         

@@ -1,5 +1,6 @@
-# you or AI?
-ai_play = False  # AI not working yet
+# Neural network
+ai_play = True
+collect_data = False # if the game data can be stored in the csv file to train the neural network.
 
 # game config:
 acceleration_speed = 0.03  # speed with witch you accelerate. Standard 0.03
