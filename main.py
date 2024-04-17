@@ -41,7 +41,7 @@ if ai_play:
     from tensorflow import keras
     import numpy as np
     import pandas as pd
-    model = keras.models.load_model("models/", model, ".h5")
+    model = keras.models.load_model("models/"+model+".h5")
 
 
 # Pygame update function
