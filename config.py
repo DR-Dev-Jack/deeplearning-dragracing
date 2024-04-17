@@ -5,7 +5,7 @@ collect_data = False # if the game data can be stored in the csv file to train t
 # game config:
 acceleration_speed = 0.03  # speed with witch you accelerate. Standard 0.03
 brake_speed = 0.4  # speed with witch you brake. Standard 0.4
-steering_speed = 0.15  # speed with witch you steer. Standard 0.15
+steering_speed = 0.3  # speed with witch you steer. Standard 0.15
 stable_civilian_car_speed = 5
 speedometer = True  # if set to false dashboard disappears. Standard True
 crazy_speedometer = True  # if set to false speedometer wont go "ghelicopter ghelicopter"

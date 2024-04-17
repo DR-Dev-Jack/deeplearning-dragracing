@@ -22,7 +22,7 @@ civilian_car2 = pg.transform.scale(Oversized_civilian_car2, (175, 175))
 dashboard = pg.transform.scale(oversized_dashboard, (300, 300))
 dashboard_pointer = pg.transform.scale(oversized_dashboard_pointer, (300, 300))
 
-velocity = 0
+velocity = 7
 travel_lenght = 0
 x = 255
 display.fill((0, 0, 0))
@@ -35,13 +35,13 @@ crash_counter = 0
 tick = 0
 left = 0
 right = 0
-sight = [300,  300, 300, 300, 300, 300]
+sight = [100, 300,  300, 300, 300, 300, 300, 100]
 
 if ai_play:
     from tensorflow import keras
     import numpy as np
     import pandas as pd
-    model = keras.models.load_model("model.h5")
+    model = keras.models.load_model("models/SelectionModel.h5")
 
 
 # Pygame update function
@@ -198,11 +198,14 @@ while running:
         if y >= 965:
             civilian_cars.remove(car)
 
-    ray_forward = ray(x + 45, 458, 300, "Up", civilian_cars)
+    ray_forward = ray(x + 45, 458, 400, "Up", civilian_cars)
     ray_forward_left = ray(x + 45, 458, 300, "Up-Left", civilian_cars)
     ray_forward_right = ray(x + 45, 458, 300, "Up-Right", civilian_cars)
-    ray_forward_less_left = ray(x + 45, 458, 300, "Up-Less-Left", civilian_cars)
-    ray_forward_less_right = ray(x + 45, 458, 300, "Up-Less-Right", civilian_cars)
+    ray_forward_less_left = ray(x + 45, 458, 400, "Up-Less-Left", civilian_cars)
+    ray_forward_less_right = ray(x + 45, 458, 400, "Up-Less-Right", civilian_cars)
+
+    left_window = ray(x, 490, 100, "Down-Right", civilian_cars)
+    right_window = ray(x + 90, 490, 100, "Down-Left", civilian_cars)
 
     if speedometer:
         speed_in_degrees = -velocity * 4.5 - 180
@@ -227,15 +230,17 @@ while running:
             print("final distance:", round(travel_lenght))
             exit("Program stopped, cause: you crashed!")
 
+    
+    data_group = [round(x),right_window, ray_forward_left, ray_forward_less_left, ray_forward, ray_forward_less_right, ray_forward_right, left_window, left, right]
+    #data_group = [round(x), ray_forward_left, ray_forward_less_left, ray_forward, ray_forward_less_right, ray_forward_right, left, right]
     if collect_data:
-        data_group = [round(y),  ray_forward_left, ray_forward_less_left, ray_forward, ray_forward_less_right, ray_forward_right, left, right]
-        with open('dataset.csv', 'a') as data:
+        with open('datasets/dataset.csv', 'a') as data:
             dataset = writer(data)
             dataset.writerow(data_group)
         left = 0
         right = 0
 
-    sight = [round(y),  ray_forward_left, ray_forward_less_left, ray_forward, ray_forward_less_right, ray_forward_right]
-    
+    sight = [round(x),right_window,ray_forward_left,ray_forward_less_left,ray_forward,ray_forward_less_right,ray_forward_right,left_window]
+    # sight = [round(x),ray_forward_left,ray_forward_less_left,ray_forward,ray_forward_less_right,ray_forward_right]
     update() 
         
