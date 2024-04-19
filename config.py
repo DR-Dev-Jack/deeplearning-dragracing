@@ -17,5 +17,5 @@ raycasting = True
 crash_is_game_over = True
 
 # bug testing:
-hitbox_visuals = True  # shows the hit box for collision bug testing
-raycasting_visuals = True  # shows ray casting for bug testing and fun
+hitbox_visuals = False  # shows the hit box for collision bug testing
+raycasting_visuals = False  # shows ray casting for bug testing and fun
